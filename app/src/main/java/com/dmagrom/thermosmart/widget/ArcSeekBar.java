@@ -4,10 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -15,32 +19,85 @@ import androidx.annotation.Nullable;
 public class ArcSeekBar
         extends View
 {
+    private static final String LOG_TAG = ArcSeekBar.class.getName ();
+
     private static final int ARC_STROKE_WIDTH = 25;
     private static final int INT_DEGREE_TEXT_FONT_SIZE = 250;
+
+    private static final int ARC_START_ANGLE = 135;    // 90 + 45
+    private static final int ARC_END_ANGLE = 405;      // 360 + 45
+
+    public static final float MIN_TEMPERATURE = 0;
+    public static final float MAX_TEMPERATURE = 50;
+
+    private float degrees = 0.0f;
 
     private Paint arcPaint;
     private float arcDiameter;
 
+    private Paint circlePaint;
+    private GestureDetector circleGestureDetector;
+
     private Paint intDegreeTextPaint;
+
 
     public ArcSeekBar (Context context)
     {
         super (context);
+
+        init ();
     }
 
     public ArcSeekBar (Context context, @Nullable AttributeSet attrs)
     {
         super (context, attrs);
+
+        init ();
     }
 
     public ArcSeekBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr)
     {
         super (context, attrs, defStyleAttr);
+
+        init ();
     }
 
     public ArcSeekBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
     {
         super (context, attrs, defStyleAttr, defStyleRes);
+
+        init ();
+    }
+
+    public void setDegrees (float value)
+    {
+        degrees = value;
+        invalidate ();
+    }
+
+    public float getDegrees ()
+    {
+        return degrees;
+    }
+
+    private void init ()
+    {
+        arcPaint = new Paint ();
+        arcPaint.setColor (Color.RED);
+        arcPaint.setStyle (Paint.Style.STROKE);
+        arcPaint.setStrokeWidth (ARC_STROKE_WIDTH);
+
+        circlePaint = new Paint ();
+        circlePaint.setColor (Color.BLUE);
+        circlePaint.setStyle (Paint.Style.FILL_AND_STROKE);
+        circlePaint.setStrokeWidth (ARC_STROKE_WIDTH);
+
+        intDegreeTextPaint = new Paint ();
+        intDegreeTextPaint.setColor (Color.BLACK);
+        intDegreeTextPaint.setStyle (Paint.Style.FILL_AND_STROKE);
+        intDegreeTextPaint.setTextSize (INT_DEGREE_TEXT_FONT_SIZE);
+
+        circleGestureDetector = new GestureDetector (getContext (), new TemperaturePointerListener ());
     }
 
     @Override
@@ -54,7 +111,6 @@ public class ArcSeekBar
         arcDiameter = (w - (ARC_STROKE_WIDTH * 2));
         radius = arcDiameter / 2;
 
-
         gradient = new SweepGradient (radius,
                                       radius,
                                       new int [] {
@@ -65,23 +121,14 @@ public class ArcSeekBar
                                               Color.YELLOW,
                                               Color.RED },
                                       new float [] { 0f, 0.35f, 0.50f, 0.65f, 0.95f, 1f });
-        arcPaint = new Paint ();
-        arcPaint.setColor (Color.RED);
-        arcPaint.setStyle (Paint.Style.STROKE);
-        arcPaint.setStrokeWidth (ARC_STROKE_WIDTH);
-        arcPaint.setShader (gradient);
 
-        intDegreeTextPaint = new Paint ();
-        intDegreeTextPaint.setColor (Color.BLACK);
-        intDegreeTextPaint.setStyle (Paint.Style.FILL_AND_STROKE);
-        intDegreeTextPaint.setTextSize (INT_DEGREE_TEXT_FONT_SIZE);
+        arcPaint.setShader (gradient);
     }
 
     @Override
     protected void onFinishInflate ()
     {
         super.onFinishInflate ();
-
     }
 
     @Override
@@ -105,27 +152,33 @@ public class ArcSeekBar
                         ARC_STROKE_WIDTH * 2,
                         arcDiameter,
                         arcDiameter,
-                        135,
-                        270,
+                        ARC_START_ANGLE,
+                        ARC_END_ANGLE - ARC_START_ANGLE,
                         false,
                         arcPaint);
 
         // Temperature
         Rect textBounds;
+        String degreesString;
 
         float textXPosition;
         float textYPosition;
 
+        degreesString = String.format ("%.1fº", degrees);
+
         textBounds = new Rect ();
-        intDegreeTextPaint.getTextBounds ("18.5", 0, "18.5".length (), textBounds);
+        intDegreeTextPaint.getTextBounds (degreesString, 0, degreesString.length (), textBounds);
 
         textXPosition = (getRight () /2) - (textBounds.width () / 2);
         textYPosition = (arcDiameter / 2); // - (textBounds.height () / 2);
 
-        canvas.drawText ("18.5", textXPosition, textYPosition, intDegreeTextPaint);
+        canvas.drawText (degreesString, textXPosition, textYPosition, intDegreeTextPaint);
 
         // Temperature pointer
-        canvas.drawCircle (ARC_STROKE_WIDTH / 2, arcDiameter / 2, ARC_STROKE_WIDTH, arcPaint);
+        Point circlePosition;
+
+        circlePosition = calculateCirclePosition ();
+        canvas.drawCircle (circlePosition.x, circlePosition.y, ARC_STROKE_WIDTH, circlePaint);
 
         ////////////////////////////////////////////////////////////////////////////////////
         // Debug
@@ -136,5 +189,93 @@ public class ArcSeekBar
         dbgPaint.setStrokeWidth (14);
 
         canvas.drawRect (0, 0, this.getRight (), this.getBottom (), dbgPaint);
+    }
+
+    private Point calculateCirclePosition ()
+    {
+        int x;
+        int y;
+        double currentAngle;
+        int radius;
+        final float transformationConstant = ((ARC_START_ANGLE - ARC_END_ANGLE) / (MIN_TEMPERATURE - MAX_TEMPERATURE));
+
+        radius = (int) ((arcDiameter - (2 * ARC_STROKE_WIDTH)) / 2);
+
+        // MIN_TEMPERATURE --> ARC_START_ANGLE
+        // MAX_TEMPERATURE --> ARC_END_ANGLE
+        // degrees         --> currentAngle
+        // Linear transformation https://es.wikiversity.org/wiki/Transformaci%C3%B3n_lineal_de_intervalos
+        currentAngle = Math.toRadians ((transformationConstant * (degrees - MIN_TEMPERATURE)) + ARC_START_ANGLE);
+
+        x = ((int) Math.round (Math.cos (currentAngle) * radius) + radius + (2 * ARC_STROKE_WIDTH));
+        y = ((int) Math.round (Math.sin (currentAngle) * radius) + radius + (2 * ARC_STROKE_WIDTH));
+
+        return new Point(x, y);
+    }
+
+    class TemperaturePointerListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown (MotionEvent e) {
+            Point circlePosition;
+            Rect circleRect;
+
+            circlePosition = calculateCirclePosition ();
+
+            Log.d (LOG_TAG, "******* " + e.getX () + "-.-" + e.getY () + "-.-" + circlePosition.x + "-.-" + circlePosition.y);
+
+            circleRect = new Rect ();
+            circleRect.left = circlePosition.x - (ARC_STROKE_WIDTH * 2);
+            circleRect.top = circlePosition.y - (ARC_STROKE_WIDTH * 2);
+            circleRect.right = circleRect.left + (ARC_STROKE_WIDTH * 4);
+            circleRect.bottom = circleRect.top + (ARC_STROKE_WIDTH * 4);
+
+            // dbgPaint.setStrokeWidth (1);
+            // canvas.drawRect (circleRect.left, circleRect.top, circleRect.right, circleRect.bottom, dbgPaint);
+
+            if (circleRect.contains ((int) e.getX (), (int) e.getY ())) {
+                Log.d (LOG_TAG, "**************************** Pulsado!!");
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onShowPress (MotionEvent motionEvent)
+        {
+            Log.d (LOG_TAG, "**************************** onShowPress!!");
+        }
+
+        @Override
+        public boolean onSingleTapUp (MotionEvent motionEvent)
+        {
+            Log.d (LOG_TAG, "**************************** onSingleTapUp!!");
+            return false;
+        }
+
+        @Override
+        public boolean onScroll (MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1)
+        {
+            Log.d (LOG_TAG, "**************************** onScroll!!");
+            return false;
+        }
+
+        @Override
+        public void onLongPress (MotionEvent motionEvent)
+        {
+            Log.d (LOG_TAG, "**************************** onLongPress!!");
+        }
+
+        @Override
+        public boolean onFling (MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1)
+        {
+            Log.d (LOG_TAG, "**************************** onFling!!");
+            return false;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed (MotionEvent e)
+        {
+            return true;
+        }
     }
 }
