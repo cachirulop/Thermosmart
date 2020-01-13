@@ -2,36 +2,63 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:seekarc="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
-    <com.dmagrom.thermosmart.widget.ArcSeekBar
-        android:id="@+id/seek_bar_degrees"
+    <!--
+        <com.dmagrom.thermosmart.widget.ArcSeekBar
+            android:id="@+id/seek_bar_degrees"
+            android:layout_width="match_parent"
+            android:layout_height="731dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    -->
+        <Button
+            android:id="@+id/btn_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="-"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seek_circular_bar_degrees" />
+
+        <Button
+            android:id="@+id/btn_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="+"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seek_circular_bar_degrees" />
+
+    <com.dmagrom.thermosmart.widget.CircularSeekBar
+        android:id="@+id/seek_circular_bar_degrees"
         android:layout_width="match_parent"
         android:layout_height="731dp"
+        app:cs_disable_pointer="false"
+        app:cs_circle_style="round"
+        app:cs_circle_stroke_width="8pt"
+        app:cs_max="50"
+        app:cs_pointer_stroke_width="15pt"
+        app:cs_progress="0"
+        app:cs_start_angle="135"
+        app:cs_end_angle="405"
+        app:cs_current_value="34"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btn_minus"
+    <TextView
+        android:id="@+id/txt_current_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="-"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seek_bar_degrees" />
-
-    <Button
-        android:id="@+id/btn_plus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="+"
+        android:fontFamily="monospace"
+        android:text="@{seek_circular_bar_degrees.cs_progress}"
+        android:textSize="80sp"
+        app:layout_constraintBottom_toBottomOf="@+id/seek_circular_bar_degrees"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seek_bar_degrees" />
-
-
+        app:layout_constraintStart_toStartOf="@+id/seek_circular_bar_degrees"
+        app:layout_constraintTop_toTopOf="@+id/seek_circular_bar_degrees" />
 </androidx.constraintlayout.widget.ConstraintLayout>

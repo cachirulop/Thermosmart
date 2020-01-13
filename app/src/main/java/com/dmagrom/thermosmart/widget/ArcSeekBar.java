@@ -101,6 +101,12 @@ public class ArcSeekBar
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return circleGestureDetector.onTouchEvent(event);
+    }
+
+
+    @Override
     protected void onSizeChanged (int w, int h, int oldw, int oldh)
     {
         super.onSizeChanged (w, h, oldw, oldh);
@@ -213,6 +219,39 @@ public class ArcSeekBar
         return new Point(x, y);
     }
 
+
+/*    private int calculateRectXInArc (Point referencePoint)
+    {
+        int result;
+        Point center;
+        double radius;
+
+        radius = arcDiameter / 2;
+
+        center = new Point ((int) (ARC_STROKE_WIDTH * 2 + radius), (int) (ARC_STROKE_WIDTH * 2 + radius));
+
+        // (y - y1) / (y2 - y1) = (x - x1) / (x2 - x1)
+        ()
+    }*/
+
+    private float calculateDegreesFromPoint (Point point)
+    {
+        int radius;
+        double angle;
+        double asinPoint;
+        final float transformationConstant = ((MIN_TEMPERATURE - MAX_TEMPERATURE) / (ARC_START_ANGLE - ARC_END_ANGLE));
+
+        radius = (int) ((arcDiameter - (2 * ARC_STROKE_WIDTH)) / 2);
+
+        asinPoint =  (point.x - (radius + (2 * ARC_STROKE_WIDTH))) / ((double) radius);
+        angle = Math.toDegrees (Math.acos (asinPoint));
+
+        Log.d (LOG_TAG, "*************** calculate: " + point.y + "-.-" + asinPoint + "-.-" + angle + "-.-" + radius);
+
+        // Linear transformation
+        return (float) (transformationConstant * (angle - ARC_START_ANGLE) + MIN_TEMPERATURE);
+    }
+
     class TemperaturePointerListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onDown (MotionEvent e) {
@@ -221,22 +260,32 @@ public class ArcSeekBar
 
             circlePosition = calculateCirclePosition ();
 
-            Log.d (LOG_TAG, "******* " + e.getX () + "-.-" + e.getY () + "-.-" + circlePosition.x + "-.-" + circlePosition.y);
-
             circleRect = new Rect ();
             circleRect.left = circlePosition.x - (ARC_STROKE_WIDTH * 2);
             circleRect.top = circlePosition.y - (ARC_STROKE_WIDTH * 2);
             circleRect.right = circleRect.left + (ARC_STROKE_WIDTH * 4);
             circleRect.bottom = circleRect.top + (ARC_STROKE_WIDTH * 4);
 
-            // dbgPaint.setStrokeWidth (1);
-            // canvas.drawRect (circleRect.left, circleRect.top, circleRect.right, circleRect.bottom, dbgPaint);
-
             if (circleRect.contains ((int) e.getX (), (int) e.getY ())) {
                 Log.d (LOG_TAG, "**************************** Pulsado!!");
+                return true;
             }
 
-            return true;
+            return false;
+        }
+
+        @Override
+        public boolean onScroll (MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+        {
+            Log.d (LOG_TAG, "**************************** onScroll!!: " + distanceX + "-.-" + distanceY + "-.-" + e2.getY ());
+
+            float degrees;
+
+            degrees = calculateDegreesFromPoint (new Point (Math.round (e2.getX ()), Math.round (e2.getY ())));
+
+            Log.d (LOG_TAG, "*************** degrees: " + degrees);
+
+            return false;
         }
 
         @Override
@@ -252,12 +301,6 @@ public class ArcSeekBar
             return false;
         }
 
-        @Override
-        public boolean onScroll (MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1)
-        {
-            Log.d (LOG_TAG, "**************************** onScroll!!");
-            return false;
-        }
 
         @Override
         public void onLongPress (MotionEvent motionEvent)
