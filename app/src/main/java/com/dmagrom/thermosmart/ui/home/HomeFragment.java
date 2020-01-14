@@ -15,7 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.dmagrom.thermosmart.R;
-import com.dmagrom.thermosmart.widget.ArcSeekBar;
+import com.dmagrom.thermosmart.model.ThermostatViewModel;
 import com.dmagrom.thermosmart.widget.CircularSeekBar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,23 +28,21 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 public class HomeFragment
         extends Fragment
 {
-
-    private HomeViewModel homeViewModel;
+    private ThermostatViewModel viewModel;
 
     // private ArcSeekBar seekBarDegrees;
 
     public View onCreateView (@NonNull LayoutInflater inflater,
                               ViewGroup container, Bundle savedInstanceState)
     {
-        homeViewModel = ViewModelProviders.of (this).get (HomeViewModel.class);
-        View root = inflater.inflate (R.layout.fragment_home, container, false);
-
-        //seekBarDegrees = root.findViewById (R.id.seek_bar_degrees);
-
+        View root;
         final TextView textView;
         final CircularSeekBar seekBar;
 
-        textView = root.findViewById (R.id.txt_current_temp);
+        viewModel = ViewModelProviders.of (this).get (ThermostatViewModel.class);
+        root = inflater.inflate (R.layout.fragment_home, container, false);
+
+        textView = root.findViewById (R.id.txt_current_temperature);
         seekBar = root.findViewById (R.id.seek_circular_bar_degrees);
 
         seekBar.setOnSeekBarChangeListener (new CircularSeekBar.OnCircularSeekBarChangeListener ()
@@ -52,7 +50,6 @@ public class HomeFragment
             @Override
             public void onProgressChanged (CircularSeekBar circularSeekBar, float progress, boolean fromUser)
             {
-                homeViewModel.setCurrentTemperature (progress);
             }
 
             @Override
@@ -68,13 +65,13 @@ public class HomeFragment
             }
         });
 
-        homeViewModel.getCurrentTemperature ().observe (this, new Observer<Float> ()
+        viewModel.getCurrentTemperature ().observe (this, new Observer<Float> ()
         {
             @Override
             public void onChanged (@Nullable Float s)
             {
-                // textView.setText (String.format ("%.1fº", s.floatValue ()));
-                seekBar.setProgress (s.floatValue ());
+                textView.setText (String.format ("%.1fº", s.floatValue ()));
+                seekBar.setCurrentValue (s.floatValue ());
             }
         });
 
@@ -91,12 +88,10 @@ public class HomeFragment
             {
                 float current;
 
-                current = seekBar.getCurrentValue ();
-                if (current > ArcSeekBar.MIN_TEMPERATURE) {
-                    seekBar.setCurrentValue (current - 0.5f);
+                current = viewModel.getCurrentTemperature ().getValue ();
+                if (current > 0) {
+                    viewModel.setCurrentTemperature (current - 0.5f);
                 }
-
-                textView.setText (String.format ("%.1fº", current));
             }
         });
 
@@ -108,12 +103,11 @@ public class HomeFragment
             {
                 float current;
 
-                current = seekBar.getCurrentValue ();
-                if (current < ArcSeekBar.MAX_TEMPERATURE) {
-                    seekBar.setCurrentValue (current + 0.5f);
+                current = viewModel.getCurrentTemperature ().getValue ();
+                if (current < seekBar.getMax ()) {
+                    viewModel.setCurrentTemperature (current + 0.5f);
                 }
 
-                textView.setText (String.format ("%.1fº", current));
             }
         });
 
@@ -125,18 +119,13 @@ public class HomeFragment
 
         dbRef.child ("thermostat").child ("currentTemp").addValueEventListener (new ValueEventListener () {
             public void onDataChange (DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
                 Float value = dataSnapshot.getValue(Float.class);
-                Log.d(TAG, "************************* Value is: " + value);
 
-                seekBar.setCurrentValue (value);
-                textView.setText (String.format ("%.1fº", value));
+                viewModel.setCurrentTemperature (value);
             }
 
             @Override
             public void onCancelled (DatabaseError error) {
-                // Failed to read value
                 Log.w (TAG, "Failed to read value.", error.toException ());
             }
         });

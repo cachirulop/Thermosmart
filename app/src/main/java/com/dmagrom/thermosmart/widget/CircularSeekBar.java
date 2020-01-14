@@ -423,7 +423,7 @@ public class CircularSeekBar extends View {
         // Current value
         mCurrentValue = attrArray.getFloat (R.styleable.cs_CircularSeekBar_cs_current_value, DEFAULT_CURRENT_VALUE);
         mCurrentValueColor = attrArray.getColor (R.styleable.cs_CircularSeekBar_cs_current_value_color, DEFAULT_CURRENT_VALUE_COLOR);
-        mCurrentValueStrokeWidth = attrArray.getFloat (R.styleable.cs_CircularSeekBar_cs_current_value_stroke_width, DEFAULT_CURRENT_VALUE_STROKE_WIDTH);
+        mCurrentValueStrokeWidth = attrArray.getDimension (R.styleable.cs_CircularSeekBar_cs_current_value_stroke_width, DEFAULT_CURRENT_VALUE_STROKE_WIDTH);
     }
 
     /**
@@ -528,20 +528,6 @@ public class CircularSeekBar extends View {
             pm.getPosTan(0, mPointerPositionXY, null);
         }
     }
-/*
-    private void caculateCurrentValuePosition () {
-        float [] positionXY = new float[2];
-
-        PathMeasure pm = new PathMeasure(mCurrentValuePath, false);
-        boolean returnValue = pm.getPosTan(pm.getLength(), positionXY, null);
-        if (!returnValue) {
-            pm = new PathMeasure(mCirclePath, false);
-            pm.getPosTan(0, positionXY, null);
-        }
-
-        mCurrentValuePosition.set (Math.round (positionXY[0]), Math.round (positionXY[1]));
-    }
-*/
 
     private void calculateCurrentValuePosition() {
         float currentValuePercent = mCurrentValue / mMax;
@@ -1027,6 +1013,10 @@ public class CircularSeekBar extends View {
         state.putInt("mCircleStyle", mCircleStyle.ordinal());
         state.putBoolean("mHideProgressWhenEmpty", mHideProgressWhenEmpty);
 
+        state.putFloat ("mCurrentValue", mCurrentValue);
+        state.putInt ("mCurrentValueColor", mCurrentValueColor);
+        state.putFloat ("mCurrentValueStrokeWidth", mCurrentValueStrokeWidth);
+
         return state;
     }
 
@@ -1054,6 +1044,10 @@ public class CircularSeekBar extends View {
         mIsInNegativeHalf = savedState.getBoolean("mIsInNegativeHalf");
         mCircleStyle = Paint.Cap.values()[savedState.getInt("mCircleStyle")];
         mHideProgressWhenEmpty = savedState.getBoolean("mHideProgressWhenEmpty");
+
+        mCurrentValue = savedState.getFloat ("mCurrentValue");
+        mCurrentValueColor = savedState.getInt ("mCurrentValueColor");
+        mCurrentValueStrokeWidth = savedState.getFloat ("mCurrentValueStrokeWidth");
 
         initPaints();
 
