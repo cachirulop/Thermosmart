@@ -36,26 +36,30 @@ public class HomeFragment
                               ViewGroup container, Bundle savedInstanceState)
     {
         View root;
-        final TextView textView;
         final CircularSeekBar seekBar;
+        final TextView txtCurrentTemperature;
+        final TextView txtGoalTemperature;
 
         viewModel = ViewModelProviders.of (this).get (ThermostatViewModel.class);
         root = inflater.inflate (R.layout.fragment_home, container, false);
 
-        textView = root.findViewById (R.id.txt_current_temperature);
         seekBar = root.findViewById (R.id.seek_circular_bar_degrees);
+        txtCurrentTemperature = root.findViewById (R.id.txt_current_temperature);
+        txtGoalTemperature = root.findViewById (R.id.txt_goal_temperature);
 
         seekBar.setOnSeekBarChangeListener (new CircularSeekBar.OnCircularSeekBarChangeListener ()
         {
             @Override
             public void onProgressChanged (CircularSeekBar circularSeekBar, float progress, boolean fromUser)
             {
+                txtGoalTemperature.setText (String.format ("%.1fº", progress));
             }
+
 
             @Override
             public void onStopTrackingTouch (CircularSeekBar seekBar)
             {
-
+                viewModel.setCurrentGoalTemperature (seekBar.getProgress ());
             }
 
             @Override
@@ -65,13 +69,23 @@ public class HomeFragment
             }
         });
 
-        viewModel.getCurrentTemperature ().observe (this, new Observer<Float> ()
+        viewModel.getCurrentTemperature ().observe (getViewLifecycleOwner (), new Observer<Float> ()
         {
             @Override
             public void onChanged (@Nullable Float s)
             {
-                textView.setText (String.format ("%.1fº", s.floatValue ()));
+                txtCurrentTemperature.setText (String.format ("%.1fº", s.floatValue ()));
                 seekBar.setCurrentValue (s.floatValue ());
+            }
+        });
+
+        viewModel.getCurrentGoalTemperature ().observe (getViewLifecycleOwner (), new Observer<Float> ()
+        {
+            @Override
+            public void onChanged (@Nullable Float s)
+            {
+                txtGoalTemperature.setText (String.format ("%.1fº", s.floatValue ()));
+                seekBar.setProgress (s.floatValue ());
             }
         });
 
@@ -107,26 +121,6 @@ public class HomeFragment
                 if (current < seekBar.getMax ()) {
                     viewModel.setCurrentTemperature (current + 0.5f);
                 }
-
-            }
-        });
-
-        // Firebase
-        FirebaseDatabase db = FirebaseDatabase.getInstance ();
-        DatabaseReference dbRef = db.getReference ();
-
-        //dbRef = db.getReference ("thermostat");
-
-        dbRef.child ("thermostat").child ("currentTemp").addValueEventListener (new ValueEventListener () {
-            public void onDataChange (DataSnapshot dataSnapshot) {
-                Float value = dataSnapshot.getValue(Float.class);
-
-                viewModel.setCurrentTemperature (value);
-            }
-
-            @Override
-            public void onCancelled (DatabaseError error) {
-                Log.w (TAG, "Failed to read value.", error.toException ());
             }
         });
 
