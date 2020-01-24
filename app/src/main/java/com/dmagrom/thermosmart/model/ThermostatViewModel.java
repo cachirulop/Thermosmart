@@ -20,6 +20,17 @@ public class ThermostatViewModel
     DatabaseReference dbRef;
     Lifecycle lifecycle;
 
+    // Database keys
+    private static final String KEY_THERMOSTAT = "thermostat";
+    private static final String KEY_CURRENT_TEMPERATURE = "currentTemperature";
+    private static final String KEY_CURRENT_HUMIDITY = "currentHumidity";
+    private static final String KEY_NIGHT_TEMPERATURE = "nightTemperature";
+    private static final String KEY_SUN_TEMPERATURE = "sunTemperature";
+    private static final String KEY_TARGET_TEMPERATURE = "targetTemperature";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_RELE_STATUS = "releStatus";
+    private static final String KEY_TARGET_TYPE = "targetType";
+
     public enum ThermostatStatus {
         ON,
         OFF
@@ -30,7 +41,7 @@ public class ThermostatViewModel
         RELE_OFF
     }
 
-    public enum ThermostatGoalType {
+    public enum ThermostatTargetType {
         Manual,
         Sun,
         Night,
@@ -38,9 +49,8 @@ public class ThermostatViewModel
     }
 
     private MutableLiveData<Float> currentTemperature;
-    private MutableLiveData<Float> currentGoalTemperature;
+    private MutableLiveData<Float> currentTargetTemperature;
     private MutableLiveData<Float> currentHumidity;
-    private MutableLiveData<Float> comfortTemperature;
     private MutableLiveData<Float> nightTemperature;
     private MutableLiveData<Float> sunTemperature;
 
@@ -56,14 +66,11 @@ public class ThermostatViewModel
         currentTemperature = new MutableLiveData<> ();
         currentTemperature.setValue (0f);
 
-        currentGoalTemperature = new MutableLiveData<> ();
-        currentGoalTemperature.setValue (0f);
+        currentTargetTemperature = new MutableLiveData<> ();
+        currentTargetTemperature.setValue (0f);
 
         currentHumidity = new MutableLiveData<> ();
         currentHumidity.setValue (0f);
-
-        comfortTemperature = new MutableLiveData<> ();
-        comfortTemperature.setValue (0f);
 
         nightTemperature = new MutableLiveData<> ();
         nightTemperature.setValue (0f);
@@ -74,12 +81,11 @@ public class ThermostatViewModel
 
     private void registerListeners ()
     {
-        addValueListener (dbRef.child ("currentTemp"), (data) -> currentTemperature.setValue (data.getValue (Float.class)));
-        addValueListener (dbRef.child ("currentGoalTemp"), (data) -> currentGoalTemperature.setValue (data.getValue (Float.class)));
-        addValueListener (dbRef.child ("currentHumidity"), (data) -> currentHumidity.setValue (data.getValue (Float.class)));
-        addValueListener (dbRef.child ("comfortTemp"), (data) -> comfortTemperature.setValue (data.getValue (Float.class)));
-        addValueListener (dbRef.child ("nightTemp"), (data) -> nightTemperature.setValue (data.getValue (Float.class)));
-        addValueListener (dbRef.child ("sunTemp"), (data) -> sunTemperature.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (KEY_CURRENT_TEMPERATURE), (data) -> currentTemperature.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (KEY_TARGET_TEMPERATURE), (data) -> currentTargetTemperature.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (KEY_CURRENT_HUMIDITY), (data) -> currentHumidity.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (KEY_NIGHT_TEMPERATURE), (data) -> nightTemperature.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (KEY_SUN_TEMPERATURE), (data) -> sunTemperature.setValue (data.getValue (Float.class)));
     }
 
     public LiveData<Float> getCurrentTemperature ()
@@ -89,17 +95,17 @@ public class ThermostatViewModel
 
     public void setCurrentTemperature (Float value)
     {
-        dbRef.child ("currentTemp").setValue (value);
+        dbRef.child (KEY_CURRENT_TEMPERATURE).setValue (value);
     }
 
-    public LiveData<Float> getCurrentGoalTemperature ()
+    public LiveData<Float> getCurrentTargetTemperature ()
     {
-        return currentGoalTemperature;
+        return currentTargetTemperature;
     }
 
-    public void setCurrentGoalTemperature (Float value)
+    public void setCurrentTargetTemperature (Float value)
     {
-        dbRef.child ("currentGoalTemp").setValue (value);
+        dbRef.child (KEY_TARGET_TEMPERATURE).setValue (value);
     }
 
     public LiveData<Float> getCurrentHumidity ()
@@ -109,17 +115,7 @@ public class ThermostatViewModel
 
     public void setCurrentHumidity (Float value)
     {
-        dbRef.child ("currentHumidity").setValue (value);
-    }
-
-    public LiveData<Float> getComfortTemperature ()
-    {
-        return comfortTemperature;
-    }
-
-    public void setComfortTemperature (Float value)
-    {
-        dbRef.child ("comfortTemp").setValue (value);
+        dbRef.child (KEY_CURRENT_HUMIDITY).setValue (value);
     }
 
     public LiveData<Float> getNightTemperature ()
@@ -129,7 +125,7 @@ public class ThermostatViewModel
 
     public void setNightTemperature (Float value)
     {
-        dbRef.child ("nightTemp").setValue (value);
+        dbRef.child (KEY_NIGHT_TEMPERATURE).setValue (value);
     }
 
     public LiveData<Float> getSunTemperature ()
@@ -139,7 +135,7 @@ public class ThermostatViewModel
 
     public void setSunTemperature (Float value)
     {
-        dbRef.child ("sunTemp").setValue (value);
+        dbRef.child (KEY_SUN_TEMPERATURE).setValue (value);
     }
 
     private void addValueListener (DatabaseReference db, SingleValueListener listener) {

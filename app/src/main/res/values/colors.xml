@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0781be</color>
+    <color name="colorPrimary">#0781BE</color>
     <color name="colorPrimaryDark">#03405F</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorGoalTemperature">#FA800C</color>
+    <color name="colorTargetTemperature">#FA800C</color>
 </resources>

@@ -3,41 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_thermostat">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.dmagrom.thermosmart.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_thermostat"
+        android:name="com.dmagrom.thermosmart.ui.thermostat.ThermostatFragment"
+        android:label="@string/menu_thermostat"
+        tools:layout="@layout/fragment_thermostat" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_programs"
         android:name="com.dmagrom.thermosmart.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_programs"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_settings"
         android:name="com.dmagrom.thermosmart.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
+        android:label="@string/menu_settings"
         tools:layout="@layout/fragment_slideshow" />
 
     <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_status"
         android:name="com.dmagrom.thermosmart.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
+        android:label="@string/menu_status"
         tools:layout="@layout/fragment_tools" />
 
-    <fragment
-        android:id="@+id/nav_share"
-        android:name="com.dmagrom.thermosmart.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
-
-    <fragment
-        android:id="@+id/nav_send"
-        android:name="com.dmagrom.thermosmart.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
 </navigation>
