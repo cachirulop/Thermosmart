@@ -22,8 +22,6 @@ public class ThermostatFragment
 {
     private ThermostatViewModel viewModel;
 
-    // private ArcSeekBar seekBarDegrees;
-
     public View onCreateView (@NonNull LayoutInflater inflater,
                               ViewGroup container, Bundle savedInstanceState)
     {
@@ -44,16 +42,22 @@ public class ThermostatFragment
 
         seekBar.setOnSeekBarChangeListener (new CircularSeekBar.OnCircularSeekBarChangeListener ()
         {
+            // Round to the nearest .5 value
+            private float roundValue (float value) {
+                return Math.round(value * 2f) / 2.0f;
+            }
+
             @Override
             public void onProgressChanged (CircularSeekBar circularSeekBar, float progress, boolean fromUser)
             {
-                txtTargetTemperature.setText (String.format ("%.1fº", progress));
+                txtTargetTemperature.setText (String.format ("%.1fº", roundValue (progress)));
             }
 
 
             @Override
             public void onStopTrackingTouch (CircularSeekBar seekBar)
             {
+                seekBar.setProgress (roundValue (seekBar.getProgress ()));
                 viewModel.setCurrentTargetTemperature (seekBar.getProgress ());
             }
 
@@ -118,6 +122,7 @@ public class ThermostatFragment
                 }
             }
         });
+
 
         return root;
     }

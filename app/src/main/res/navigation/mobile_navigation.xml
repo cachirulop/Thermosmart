@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/nav_programs"
-        android:name="com.dmagrom.thermosmart.ui.gallery.GalleryFragment"
+        android:name="com.dmagrom.thermosmart.ui.programs.ProgramsFragment"
         android:label="@string/menu_programs"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_programs" />
 
     <fragment
         android:id="@+id/nav_settings"
@@ -28,5 +28,10 @@
         android:name="com.dmagrom.thermosmart.ui.tools.ToolsFragment"
         android:label="@string/menu_status"
         tools:layout="@layout/fragment_tools" />
+    <fragment
+        android:id="@+id/nav_scheduler"
+        android:name="com.dmagrom.thermosmart.ui.scheduler.SchedulerFragment"
+        android:label="@string/menu_scheduler"
+        tools:layout="@layout/fragment_scheduler" />
 
 </navigation>

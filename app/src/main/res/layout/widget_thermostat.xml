@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_target_temperature_mode"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txt_target_temperature"
+        app:srcCompat="@drawable/ic_sun" />
+
+    <TextView
+        android:id="@+id/txt_target_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="22.0º"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="@+id/txt_current_temperature"
+        app:layout_constraintStart_toStartOf="@+id/txt_current_temperature"
+        app:layout_constraintTop_toBottomOf="@+id/txt_current_temperature" />
+
+    <Button
+        android:id="@+id/btn_minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="-"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_circular_bar_degrees" />
+
+    <Button
+        android:id="@+id/btn_plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="+"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_circular_bar_degrees" />
+
+    <com.dmagrom.thermosmart.widget.CircularSeekBar
+        android:id="@+id/seek_circular_bar_degrees"
+        android:layout_width="match_parent"
+        android:layout_height="731dp"
+        app:cs_circle_stroke_width="8pt"
+        app:cs_circle_style="round"
+        app:cs_current_value="34"
+        app:cs_current_value_color="@color/colorTargetTemperature"
+        app:cs_current_value_stroke_width="3pt"
+        app:cs_disable_pointer="false"
+        app:cs_end_angle="405"
+        app:cs_max="40"
+        app:cs_pointer_color="@color/colorPrimary"
+        app:cs_pointer_halo_color="@color/colorPrimary"
+        app:cs_pointer_stroke_width="15pt"
+        app:cs_progress="0"
+        app:cs_start_angle="135"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_current_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="monospace"
+        android:text="10%"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintStart_toEndOf="@+id/img_humidity"
+        app:layout_constraintTop_toTopOf="@+id/seek_circular_bar_degrees" />
+
+    <TextView
+        android:id="@+id/txt_current_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="monospace"
+        android:text="15.0º"
+        android:textAlignment="center"
+        android:textColor="@color/colorTargetTemperature"
+        android:textSize="65sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintStart_toStartOf="@+id/seek_circular_bar_degrees"
+        app:layout_constraintTop_toTopOf="@+id/seek_circular_bar_degrees" />
+
+    <ImageView
+        android:id="@+id/img_status"
+        android:layout_width="128dp"
+        android:layout_height="88dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/seek_circular_bar_degrees"
+        app:layout_constraintEnd_toEndOf="@+id/seek_circular_bar_degrees"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_fire_disabled" />
+
+    <ImageView
+        android:id="@+id/img_temperature"
+        android:layout_width="31dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintStart_toStartOf="@+id/img_target_temperature_mode"
+        app:layout_constraintTop_toTopOf="@+id/txt_current_temperature"
+        app:srcCompat="@drawable/ic_thermometer_alone" />
+
+    <ImageView
+        android:id="@+id/img_humidity"
+        android:layout_width="28dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/seek_circular_bar_degrees"
+        app:layout_constraintTop_toTopOf="@+id/txt_current_humidity"
+        app:srcCompat="@drawable/ic_humidity" />
+
+    <ImageView
+        android:id="@+id/img_power"
+        android:layout_width="48dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_turn_off" />
+</androidx.constraintlayout.widget.ConstraintLayout>

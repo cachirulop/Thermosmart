@@ -39,4 +39,8 @@
         <attr name="cs_current_value_stroke_width" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="ProgramHourCell">
+        <attr name="hour" format="integer" />
+    </declare-styleable>
+
 </resources>
