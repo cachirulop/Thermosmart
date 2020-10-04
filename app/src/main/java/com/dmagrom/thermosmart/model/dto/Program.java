@@ -1,33 +1,56 @@
 package com.dmagrom.thermosmart.model.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class Program
 {
-    private String name;
-    private String description;
-    private DatabaseGlobals.ThermostatTargetType [] scheduler;
+    private int        id;
+    private String     name;
+    private String     description;
+    private List<Integer> program;
 
     public Program ()
     {
-        name = "";
-        description = "";
-        scheduler = new DatabaseGlobals.ThermostatTargetType[24];
-        for (int i = 0; i < scheduler.length; i++) {
-            scheduler [i] = DatabaseGlobals.ThermostatTargetType.None;
+        name = "Laborables";
+        description = "Programación de lunes a viernes";
+        program = new ArrayList<> ();
+        for (int i = 0 ; i < 96 ; i++) {
+            if (i == 37) {
+                program.add (DatabaseGlobals.ThermosmartProgram.Sun.getIntValue ());
+            }
+            else {
+                program.add (DatabaseGlobals.ThermosmartProgram.Moon.getIntValue ());
+            }
+/*
+            if (i < (19 * 4)) {
+                program.add (DatabaseGlobals.ThermosmartProgram.Moon.getIntValue ());
+            }
+            else {
+                program.add (DatabaseGlobals.ThermosmartProgram.Sun.getIntValue ());
+            }
+
+ */
         }
     }
 
-    public Program (String name, String description, DatabaseGlobals.ThermostatTargetType [] scheduler)
+    public Program (int id, String name, String description, List<Integer> program)
     {
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.scheduler = scheduler;
+        this.program = program;
+    }
+
+    public int getId ()
+    {
+        return id;
+    }
+
+    public void setId (int id)
+    {
+        this.id = id;
     }
 
     public String getName ()
@@ -50,24 +73,25 @@ public class Program
         this.description = description;
     }
 
-    public DatabaseGlobals.ThermostatTargetType [] getScheduler ()
+    public List<Integer> getProgram ()
     {
-        return scheduler;
+        return program;
     }
 
-    public void setScheduler (DatabaseGlobals.ThermostatTargetType [] scheduler)
+    public void setProgram (List<Integer> program)
     {
-        this.scheduler = scheduler;
+        this.program = program;
+    }
+
+    public void setTargetType (int hour, DatabaseGlobals.ThermosmartProgram newType)
+    {
+        program.set (hour, newType.getIntValue ());
     }
 
     @Override
     public String toString ()
     {
-        return "Program{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", scheduler=" + Arrays.toString (scheduler) +
-                '}';
+        return "Program{" + "id=" + id + ", name='" + name + '\'' + ", description='" + description + '\'' + ", program=" + program + '}';
     }
 
     @Override
@@ -76,24 +100,17 @@ public class Program
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Program)) {
+        if (o == null || getClass () != o.getClass ()) {
             return false;
         }
-        Program program = (Program) o;
-        return Objects.equals (name, program.name) &&
-                Objects.equals (description, program.description) &&
-                Arrays.equals (scheduler, program.scheduler);
+        Program program1 = (Program) o;
+        return id == program1.id && Objects.equals (name, program1.name) && Objects.equals (description, program1.description) && Objects.equals (program, program1.program);
     }
 
     @Override
     public int hashCode ()
     {
-        int result = Objects.hash (name, description);
-        result = 31 * result + Arrays.hashCode (scheduler);
-        return result;
+        return Objects.hash (id, name, description, program);
     }
 
-    public void setTargetType (int hour, DatabaseGlobals.ThermostatTargetType newType) {
-        scheduler [hour] = newType;
-    }
 }

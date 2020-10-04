@@ -12,11 +12,12 @@ public class ThermostatViewModel
 {
     protected DatabaseReference dbRef;
 
-    private MutableLiveData<Float> currentTemperature;
-    private MutableLiveData<Float> currentTargetTemperature;
-    private MutableLiveData<Float> currentHumidity;
-    private MutableLiveData<Float> nightTemperature;
-    private MutableLiveData<Float> sunTemperature;
+    private MutableLiveData<Float>                              currentTemperature;
+    private MutableLiveData<Float>                              currentTargetTemperature;
+    private MutableLiveData<Float>                              currentHumidity;
+    private MutableLiveData<Float>                              nightTemperature;
+    private MutableLiveData<Float>                              sunTemperature;
+    private MutableLiveData<DatabaseGlobals.ThermosmartProgram> targetType;
 
     public ThermostatViewModel ()
     {
@@ -25,7 +26,7 @@ public class ThermostatViewModel
         FirebaseDatabase db;
 
         db = FirebaseDatabase.getInstance ();
-        dbRef = db.getReference ().child (DatabaseGlobals.KEY_THERMOSTAT);
+        dbRef = db.getReference ().child (DatabaseGlobals.KEY_STATUS);
 
         registerListeners ();
 
@@ -43,6 +44,9 @@ public class ThermostatViewModel
 
         sunTemperature = new MutableLiveData<> ();
         sunTemperature.setValue (0f);
+
+        targetType = new MutableLiveData<> ();
+        targetType.setValue (DatabaseGlobals.ThermosmartProgram.None);
     }
 
     private void registerListeners ()
@@ -57,6 +61,8 @@ public class ThermostatViewModel
                           (data) -> nightTemperature.setValue (data.getValue (Float.class)));
         addValueListener (dbRef.child (DatabaseGlobals.KEY_SUN_TEMPERATURE),
                           (data) -> sunTemperature.setValue (data.getValue (Float.class)));
+        addValueListener (dbRef.child (DatabaseGlobals.KEY_TARGET_TYPE),
+                          (data) -> targetType.setValue (DatabaseGlobals.ThermosmartProgram.values () [data.getValue (Integer.class)]));
     }
 
     public LiveData<Float> getCurrentTemperature ()
@@ -107,5 +113,15 @@ public class ThermostatViewModel
     public void setSunTemperature (Float value)
     {
         dbRef.child (DatabaseGlobals.KEY_SUN_TEMPERATURE).setValue (value);
+    }
+
+    public LiveData<DatabaseGlobals.ThermosmartProgram> getTargetType ()
+    {
+        return targetType;
+    }
+
+    public void setTargetType (DatabaseGlobals.ThermosmartProgram value)
+    {
+        dbRef.child (DatabaseGlobals.KEY_TARGET_TYPE).setValue (value.getIntValue ());
     }
 }

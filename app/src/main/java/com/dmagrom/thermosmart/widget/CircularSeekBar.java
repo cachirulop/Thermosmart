@@ -728,6 +728,11 @@ public class CircularSeekBar extends View {
         recalculateAll();
     }
 
+    public boolean isUserMovingPointer ()
+    {
+        return mUserIsMovingPointer;
+    }
+
     public boolean isLockEnabled() {
         return mLockEnabled;
     }

@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.dmagrom.thermosmart.R;
 import com.dmagrom.thermosmart.model.ThermostatViewModel;
+import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 import com.dmagrom.thermosmart.widget.CircularSeekBar;
 
 public class ThermostatFragment
@@ -59,6 +60,7 @@ public class ThermostatFragment
             {
                 seekBar.setProgress (roundValue (seekBar.getProgress ()));
                 viewModel.setCurrentTargetTemperature (seekBar.getProgress ());
+                viewModel.setTargetType (DatabaseGlobals.ThermosmartProgram.Manual);
             }
 
             @Override

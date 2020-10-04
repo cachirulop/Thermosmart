@@ -2,11 +2,6 @@ package com.dmagrom.thermosmart.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -16,16 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.dmagrom.thermosmart.R;
-import com.dmagrom.thermosmart.model.ThermostatViewModel;
 import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 
 public class ProgramHourCell
         extends LinearLayout
 {
-    private TextView txtHour;
-    private ImageView imgProgramTarget;
-    private DatabaseGlobals.ThermostatTargetType targetType = DatabaseGlobals.ThermostatTargetType.None;
-    private String hour;
+    private TextView                           txtHour;
+    private ImageView                          imgProgramTarget;
+    private DatabaseGlobals.ThermosmartProgram targetType = DatabaseGlobals.ThermosmartProgram.Moon;
+    private String                             hour;
 
     public ProgramHourCell (Context context)
     {
@@ -116,11 +110,11 @@ public class ProgramHourCell
     {
         switch (event.getAction ()) {
             case MotionEvent.ACTION_DOWN:
-                if (targetType == DatabaseGlobals.ThermostatTargetType.Night) {
-                    targetType = DatabaseGlobals.ThermostatTargetType.Sun;
+                if (targetType == DatabaseGlobals.ThermosmartProgram.Moon) {
+                    targetType = DatabaseGlobals.ThermosmartProgram.Sun;
                 }
                 else {
-                    targetType = DatabaseGlobals.ThermostatTargetType.Night;
+                    targetType = DatabaseGlobals.ThermosmartProgram.Moon;
                 }
 
                 imgProgramTarget.setImageResource (getImageResourceIdByTargetType (targetType));
@@ -133,18 +127,18 @@ public class ProgramHourCell
         return true;
     }
 
-    private int getImageResourceIdByTargetType (DatabaseGlobals.ThermostatTargetType targetType) {
+    private int getImageResourceIdByTargetType (DatabaseGlobals.ThermosmartProgram targetType) {
         switch (targetType) {
             case Sun: return R.drawable.ic_sun;
-            case Night: return R.drawable.ic_night;
+            case Moon: return R.drawable.ic_night;
             default: return R.drawable.ic_turn_on;
         }
     }
 
-    private int getBackgroundResourceIdByTargetType (DatabaseGlobals.ThermostatTargetType targetType) {
+    private int getBackgroundResourceIdByTargetType (DatabaseGlobals.ThermosmartProgram targetType) {
         switch (targetType) {
             case Sun: return R.drawable.border_sun;
-            case Night: return R.drawable.border_night;
+            case Moon: return R.drawable.border_night;
             default: return R.drawable.border;
         }
     }
