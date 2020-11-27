@@ -15,13 +15,27 @@ public class DatabaseGlobals
         RELE_OFF
     }
 
-    public enum ThermostatTargetType
+    public enum ThermosmartProgram
     {
-        None,
-        Manual,
-        Sun,
-        Night,
-        Comfort
+        None (0),
+        Off (1),
+        Moon (2),
+        Sun (3),
+        Manual (4),
+        ManualMoon (5),
+        ManualSun (6),
+        Holidays (7);
+
+        private final int intValue;
+
+        ThermosmartProgram (int value) {
+            intValue = value;
+        }
+
+        public int getIntValue ()
+        {
+            return intValue;
+        }
     }
 
     // Database keys

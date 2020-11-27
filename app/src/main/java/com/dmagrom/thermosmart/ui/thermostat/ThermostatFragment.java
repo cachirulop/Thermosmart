@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.dmagrom.thermosmart.R;
 import com.dmagrom.thermosmart.model.ThermostatViewModel;
-import com.dmagrom.thermosmart.ui.adapter.ImageSpinnerRow;
 import com.dmagrom.thermosmart.widget.CircularSeekBar;
 
 import java.util.ArrayList;
