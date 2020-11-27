@@ -25,7 +25,7 @@ public class ThermostatViewModel
         FirebaseDatabase db;
 
         db = FirebaseDatabase.getInstance ();
-        dbRef = db.getReference ().child (DatabaseGlobals.KEY_THERMOSTAT);
+        dbRef = db.getReference ().child (DatabaseGlobals.KEY_STATUS);
 
         registerListeners ();
 

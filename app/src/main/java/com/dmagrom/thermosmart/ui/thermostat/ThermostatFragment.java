@@ -4,8 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -15,7 +19,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.dmagrom.thermosmart.R;
 import com.dmagrom.thermosmart.model.ThermostatViewModel;
+import com.dmagrom.thermosmart.ui.adapter.ImageSpinnerRow;
 import com.dmagrom.thermosmart.widget.CircularSeekBar;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ThermostatFragment
         extends Fragment
@@ -88,41 +98,45 @@ public class ThermostatFragment
             }
         });
 
-        ///////////////////////////////////////////////////////////////////////////
+        int[] targetImages ={R.drawable.ic_humidity,R.drawable.ic_sun,R.drawable.ic_night};
 
-        Button btn;
+        List<ImageSpinnerRow> options = new ArrayList<> ();
+        ArrayList<Map<String, Integer>> arrayList=new ArrayList<>();
 
+        options.add(new ImageSpinnerRow(1, R.drawable.ic_night));
+        options.add(new ImageSpinnerRow(2, R.drawable.ic_sun));
+        options.add(new ImageSpinnerRow(3, R.drawable.ic_humidity));
 
-        btn = root.findViewById (R.id.btn_minus);
-        btn.setOnClickListener (new View.OnClickListener ()
+        for (int i = 0; i < targetImages.length; i++) {
+            Map<String, Integer> map;
+
+            map = new HashMap<> ();
+            map.put ("targetImage", targetImages[i]);
+
+            arrayList.add (map);
+        }
+
+        Spinner targetTypeSpinner;
+        SimpleAdapter tmpAdapter;
+
+        targetTypeSpinner = root.findViewById (R.id.spnr_target_type);
+        tmpAdapter = new SimpleAdapter (getContext (), arrayList, R.layout.spinner_row, new String [] { "targetImage"}, new int [] { R.id.imgSpinnerRowImage });
+        targetTypeSpinner.setAdapter (tmpAdapter);
+
+        targetTypeSpinner.setOnItemSelectedListener (new AdapterView.OnItemSelectedListener ()
         {
             @Override
-            public void onClick (View view)
+            public void onItemSelected (AdapterView<?> parent, View view, int position, long id)
             {
-                float current;
-
-                current = viewModel.getCurrentTemperature ().getValue ();
-                if (current > 0) {
-                    viewModel.setCurrentTemperature (current - 0.5f);
-                }
+                Toast.makeText (getContext (), targetImages[position], Toast.LENGTH_LONG).show ();//show the selected image in toast according to position
             }
-        });
 
-        btn = root.findViewById (R.id.btn_plus);
-        btn.setOnClickListener (new View.OnClickListener ()
-        {
             @Override
-            public void onClick (View view)
+            public void onNothingSelected (AdapterView<?> parent)
             {
-                float current;
 
-                current = viewModel.getCurrentTemperature ().getValue ();
-                if (current < seekBar.getMax ()) {
-                    viewModel.setCurrentTemperature (current + 0.5f);
-                }
             }
         });
-
 
         return root;
     }

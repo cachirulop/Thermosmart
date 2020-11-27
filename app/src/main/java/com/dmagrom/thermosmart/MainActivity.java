@@ -13,6 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -64,6 +65,15 @@ public class MainActivity
         NavController navController = Navigation.findNavController (this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController (this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController (navigationView, navController);
+
+        signinFirebase ();
+    }
+
+    private void signinFirebase () {
+        FirebaseAuth auth;
+
+        auth = FirebaseAuth.getInstance ();
+        auth.signInWithEmailAndPassword (getString (R.string.firebase_user), getString (R.string.firebase_password));
     }
 
     @Override
