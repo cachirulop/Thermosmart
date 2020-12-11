@@ -98,14 +98,16 @@ public class ThermostatFragment
         });
 
         int[] targetImages ={R.drawable.ic_humidity,R.drawable.ic_sun,R.drawable.ic_night};
+        ArrayList<Map<String, Integer>> arrayList=new ArrayList<>();
 
+/*
         List<ImageSpinnerRow> options = new ArrayList<> ();
         ArrayList<Map<String, Integer>> arrayList=new ArrayList<>();
 
         options.add(new ImageSpinnerRow(1, R.drawable.ic_night));
         options.add(new ImageSpinnerRow(2, R.drawable.ic_sun));
         options.add(new ImageSpinnerRow(3, R.drawable.ic_humidity));
-
+*/
         for (int i = 0; i < targetImages.length; i++) {
             Map<String, Integer> map;
 

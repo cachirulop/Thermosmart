@@ -1,41 +1,32 @@
-/*
 package com.dmagrom.thermosmart.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
-import com.dmagrom.thermosmart.model.dto.Program;
 
-import java.time.Duration;
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ProgramBar extends View
+public class ProgramBar
+        extends View
 {
-    private Paint rectPaint;
-    private Paint hoursPaint;
-    private Paint currentSelectionPaint;
-    private Paint intervalPaint;
+    private static final int MARGIN = 5;
+    private static final int TODAY_PROGRAM_LENGTH = (24 * 4);
 
-    private float barHeight;
-    private float margin;
-    private float textMargin;
+    private Paint hourLinePaint;
+    private Paint sunProgramPaint;
+    private Paint moonProgramPaint;
+    private Paint manualProgramPaint;
 
-    private Point initialTouchEvent = null;
-    private Point currentMovementPosition = null;
-
-    private Program program;
+    private List<DatabaseGlobals.ThermosmartProgram> todayProgram;
 
     public ProgramBar (Context context)
     {
@@ -65,253 +56,112 @@ public class ProgramBar extends View
         init (attrs);
     }
 
-    @Override
-    public boolean onTouchEvent (MotionEvent event)
-    {
-        // Log.d (ProgramBar.class.getName (), "onTouchEvent: " + event.toString ());
-
-        switch (event.getAction ()) {
-            case MotionEvent.ACTION_DOWN:
-                if (isPointInsideBar (event.getX (), event.getY())) {
-                    initialTouchEvent = new Point ((int) event.getX (), (int) event.getY ());
-                    currentMovementPosition = new Point ((int) event.getX (), (int) event.getY ());
-                }
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (currentMovementPosition != null && !positionXHasInterval (event.getX ())) {
-                    float realX;
-                    int currentMinute;
-
-                    if (event.getX () < margin) {
-                        realX = margin;
-                    }
-                    else if (event.getX () > (getRight () - margin)) {
-                        realX = (getRight () - margin);
-                    }
-                    else {
-                        realX = event.getX ();
-                    }
-
-                    currentMinute = getMinuteFromPosition (realX);
-                    if (currentMinute % 5 == 0) {
-                        currentMovementPosition.set ((int) realX, (int) event.getY ());
-                    }
-                }
-
-                break;
-
-            case MotionEvent.ACTION_UP:
-                ProgramInterval interval;
-
-                if (initialTouchEvent != null && currentMovementPosition != null) {
-                    interval = new ProgramInterval ();
-                    interval.setInitialMinute (getMinuteFromPosition (initialTouchEvent.x));
-                    interval.setFinalMinute (getMinuteFromPosition (currentMovementPosition.x));
-                    interval.setTargetType (DatabaseGlobals.ThermostatTargetType.Night);
-
-                    program.addInterval (interval);
-                }
-
-                initialTouchEvent = null;
-                currentMovementPosition = null;
-
-                invalidate ();
-
-                break;
-        }
-
-        invalidate ();
-
-        return true;
-        // return super.onTouchEvent (event);
-    }
-
     private void init (AttributeSet attrs)
     {
-        program = new Program ();
+        todayProgram = new ArrayList<> ();
+        for (int i = 0; i < TODAY_PROGRAM_LENGTH; i++) {
+            if (i < 70) {
+                todayProgram.add (DatabaseGlobals.ThermosmartProgram.Moon);
+            }
+            else {
+                todayProgram.add (DatabaseGlobals.ThermosmartProgram.Sun);
+            }
+        }
 
-        rectPaint = new Paint ();
-        // rectPaint.setAntiAlias(true);
-        // rectPaint.setDither(true);
-        rectPaint.setColor(Color.RED);
-        rectPaint.setStrokeWidth(4);
-        rectPaint.setStyle(Paint.Style.STROKE);
+        hourLinePaint = new Paint ();
+        hourLinePaint.setAntiAlias(true);
+        hourLinePaint.setDither(true);
+        hourLinePaint.setColor (Color.BLACK);
+        hourLinePaint.setStrokeWidth (4);
+        hourLinePaint.setStyle (Paint.Style.FILL);
+        hourLinePaint.setTextSize (20);
 
-        hoursPaint = new Paint ();
-        // hoursPaint.setAntiAlias(true);
-        // hoursPaint.setDither(true);
-        hoursPaint.setColor(Color.BLUE);
-        hoursPaint.setStrokeWidth(4);
-        hoursPaint.setStyle(Paint.Style.STROKE);
-        hoursPaint.setTextSize (35);
+        sunProgramPaint = new Paint ();
+        sunProgramPaint.setAntiAlias(false);
+        sunProgramPaint.setDither(false);
+        sunProgramPaint.setColor (Color.BLUE);
+        sunProgramPaint.setStrokeWidth (1);
+        sunProgramPaint.setStyle (Paint.Style.FILL);
 
-        currentSelectionPaint = new Paint ();
-        // currentSelectionPaint.setAntiAlias(true);
-        // currentSelectionPaint.setDither(true);
-        currentSelectionPaint.setColor(Color.BLUE);
-        currentSelectionPaint.setStrokeWidth(4);
-        currentSelectionPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        currentSelectionPaint.setTextSize (35);
+        moonProgramPaint = new Paint ();
+        moonProgramPaint.setAntiAlias(false);
+        moonProgramPaint.setDither(false);
+        moonProgramPaint.setColor (Color.BLUE);
+        moonProgramPaint.setStrokeWidth (1);
+        moonProgramPaint.setStyle (Paint.Style.FILL);
 
-        intervalPaint = new Paint ();
-        // intervalPaint.setAntiAlias(true);
-        // intervalPaint.setDither(true);
-        intervalPaint.setColor(Color.BLUE);
-        intervalPaint.setStrokeWidth(4);
-        intervalPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        intervalPaint.setTextSize (35);
-
-        // TODO: read attributes or calculate in onMeasure
-        barHeight = 80;
-        margin = 75;
-        textMargin = 20;
+        manualProgramPaint = new Paint ();
+        manualProgramPaint.setAntiAlias(false);
+        manualProgramPaint.setDither(false);
+        manualProgramPaint.setColor (Color.YELLOW);
+        manualProgramPaint.setStrokeWidth (1);
+        manualProgramPaint.setStyle (Paint.Style.FILL);
     }
 
-    @SuppressLint ("MissingSuperCall")
+    public List<DatabaseGlobals.ThermosmartProgram> getTodayProgram ()
+    {
+        return todayProgram;
+    }
+
+    public void setTodayProgram (List<DatabaseGlobals.ThermosmartProgram> todayProgram)
+    {
+        this.todayProgram = todayProgram;
+    }
+
     @Override
     public void draw (Canvas canvas)
     {
         Rect textBounds;
-        float textY;
-        float textX;
-        float lineX;
-        float startLineY;
-        float endLineY;
+        float startLineX;
+        float endLineX;
+        float lineY;
+        float lineWidth;
+
+        super.draw (canvas);
+
+        //canvas.drawLine (0, 0, getWidth (), getHeight (), hourLinePaint);
 
         textBounds = new Rect ();
-        hoursPaint.getTextBounds ("0", 0, 1, textBounds);
+        hourLinePaint.getTextBounds ("00:00",
+                                     0,
+                                     "00:00".length (),
+                                     textBounds);
 
-        startLineY = margin + (barHeight / 2);
-        endLineY = barHeight + margin + textMargin - (textMargin / 2);
-        textY = barHeight + margin + textMargin + textBounds.height ();
+        // canvas.drawText ("00:00", MARGIN, getHeight () - MARGIN, hourLinePaint);
+        startLineX = MARGIN + (textBounds.width () / 2);
+        endLineX = getWidth () - (MARGIN + (textBounds.width () / 2));
+        lineWidth = endLineX - startLineX;
+        lineY = getHeight () - (MARGIN + textBounds.height () + MARGIN);
 
-        // lineX = margin;
-        lineX = getPositionFromHour (0);
-        textX = lineX - (textBounds.width () / 2);
+        for (int quarter = 0; quarter < TODAY_PROGRAM_LENGTH; quarter++) {
+            float quarterStartX;
+            float quarterEndX;
 
-        canvas.drawText ("0", textX, textY, hoursPaint);
-        canvas.drawLine (lineX, startLineY, lineX, endLineY, hoursPaint);
+            quarterStartX = (quarter * (lineWidth / TODAY_PROGRAM_LENGTH)) + startLineX;
+            quarterEndX = quarterStartX + (lineWidth / TODAY_PROGRAM_LENGTH);
 
-        hoursPaint.getTextBounds ("12", 0, 2, textBounds);
-        lineX = getPositionFromHour (12);
-        //lineX = ((getRight () - margin) / 2);
-        textX = lineX - (textBounds.width () / 2);
-
-        canvas.drawText ("12", textX, textY, hoursPaint);
-        canvas.drawLine (lineX, startLineY, lineX, endLineY, hoursPaint);
-
-        hoursPaint.getTextBounds ("24", 0, 2, textBounds);
-        //lineX = (getRight () - margin);
-        lineX = getPositionFromHour (24);
-        textX = lineX - (textBounds.width () / 2);
-
-        canvas.drawText ("24", textX, textY, hoursPaint);
-        canvas.drawLine (lineX, startLineY, lineX, endLineY, hoursPaint);
-
-        // Current selection
-        ///////////////////////////////////////////////////////////////////////////////////////
-        if (initialTouchEvent != null && currentMovementPosition != null) {
-            String time;
-
-            time = getTimeFormattedFromPosition (initialTouchEvent.x);
-            currentSelectionPaint.getTextBounds (time, 0, time.length (), textBounds);
-
-            canvas.drawText (time,
-                             initialTouchEvent.x - (textBounds.width () / 2),
-                             margin - textMargin,
-                             currentSelectionPaint);
-
-            time = getTimeFormattedFromPosition (currentMovementPosition.x);
-            currentSelectionPaint.getTextBounds (time, 0, time.length (), textBounds);
-            canvas.drawText (time,
-                             currentMovementPosition.x - (textBounds.width () / 2),
-                             margin - textMargin,
-                             currentSelectionPaint);
-
-            canvas.drawRect (initialTouchEvent.x,
-                             margin,
-                             currentMovementPosition.x,
-                             margin + barHeight,
-                             currentSelectionPaint);
+            canvas.drawRect (quarterStartX, lineY - 40, quarterEndX, lineY, moonProgramPaint);
         }
 
-        // Intervals
-        ///////////////////////////////////////////////////////////////////////////////////////
+        canvas.drawLine (startLineX, (lineY - (hourLinePaint.getStrokeWidth () / 2)), endLineX, (lineY - (hourLinePaint.getStrokeWidth () / 2)), hourLinePaint);
 
-        for (ProgramInterval current : program.getIntervals ()) {
-            float leftX;
-            float rightX;
+        for (int hour = 0; hour < 25; hour++) {
+            float hourX;
 
-            switch (current.getTargetType ()) {
-                case Sun:
-                    intervalPaint.setColor (Color.rgb (200, 100, 100));
-                    break;
+            hourX = (hour * (lineWidth / 24)) + startLineX;
 
-                case Night:
-                    intervalPaint.setColor (Color.CYAN);
-                    break;
-
-                case Comfort:
-                    intervalPaint.setColor (Color.GREEN);
-                    break;
-
-                default:
-                    intervalPaint.setColor (Color.BLACK);
-                    break;
+            if (hour % 6 == 0) {
+                canvas.drawLine (hourX, lineY - 30, hourX, lineY, hourLinePaint);
+                canvas.drawText (String.format ("%02d:00", hour),
+                                 hourX - (textBounds.width () / 2),
+                                 getHeight () - MARGIN,
+                                 hourLinePaint);
             }
-
-            leftX = getPositionFromMinute (current.getInitialMinute ());
-            rightX = getPositionFromMinute (current.getFinalMinute ());
-
-            canvas.drawRect (leftX, margin, rightX, margin + barHeight, intervalPaint);
+            else {
+                canvas.drawLine (hourX, lineY - 10, hourX, lineY, hourLinePaint);
+            }
         }
-
-
-        // Bar
-        ///////////////////////////////////////////////////////////////////////////////////////
-        canvas.drawRect (margin,
-                         margin,
-                         getRight () - margin,
-                         barHeight + margin,
-                         rectPaint);
     }
 
-    public String getTimeFormattedFromPosition (float positionX) {
-        return LocalTime.MIN.plus (Duration.ofMinutes (getMinuteFromPosition (positionX))).toString ();
-    }
 
-    // https://es.wikiversity.org/wiki/Transformaci%C3%B3n_lineal_de_intervalos
-    public int getMinuteFromPosition (float positionX) {
-        return (int) (((0 - 1440) / (margin - (getRight () - margin))) * (positionX - margin));
-    }
-
-    public float getPositionFromHour (float hour) {
-        return getPositionFromMinute ((int)(hour * 60));
-    }
-
-    // https://es.wikiversity.org/wiki/Transformaci%C3%B3n_lineal_de_intervalos
-    public float getPositionFromMinute (int minute) {
-        return (((margin - (getRight () - margin)) / (0 - 1440)) * minute) + margin;
-    }
-
-    public boolean isPointInsideBar (float x, float y) {
-        return (x >= margin && x <= (getRight () - margin) && y >= margin && y <= (barHeight + margin));
-    }
-
-    public boolean positionXHasInterval (float positionX) {
-        int minute;
-        boolean result;
-
-        minute= getMinuteFromPosition (positionX);
-
-        result = program.getIntervals ()
-                    .stream ()
-                    .anyMatch (i -> (i.getInitialMinute () < minute && i.getFinalMinute () > minute));
-
-        Log.d (ProgramBar.class.getName (), "************ " + result + "-.-" + minute + "-.-" + program.getIntervals ().toString ());
-
-        return result;
-    }
 }
-*/
