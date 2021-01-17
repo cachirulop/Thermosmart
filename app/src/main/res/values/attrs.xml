@@ -43,4 +43,11 @@
         <attr name="hour" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="ProgramBar">
+        <attr name="hour_line_color" format="color" />
+        <attr name="sun_program_color" format="color" />
+        <attr name="moon_program_color" format="color" />
+        <attr name="manual_program_color" format="color" />
+    </declare-styleable>
+
 </resources>

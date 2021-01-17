@@ -1,6 +1,7 @@
 package com.dmagrom.thermosmart.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,7 +10,10 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.dmagrom.thermosmart.R;
 import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 
 import java.util.ArrayList;
@@ -26,37 +30,82 @@ public class ProgramBar
     private Paint moonProgramPaint;
     private Paint manualProgramPaint;
 
+    private int hourLineColor;
+    private int sunProgramColor;
+    private int moonProgramColor;
+    private int manualProgramColor;
+
     private List<DatabaseGlobals.ThermosmartProgram> todayProgram;
 
     public ProgramBar (Context context)
     {
         super (context);
 
-        init (null);
+        init (null, 0, 0);
     }
 
     public ProgramBar (Context context, @Nullable AttributeSet attrs)
     {
         super (context, attrs);
 
-        init (attrs);
+        init (attrs, 0, 0);
     }
 
     public ProgramBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr)
     {
         super (context, attrs, defStyleAttr);
 
-        init (attrs);
+        init (attrs, defStyleAttr, 0);
     }
 
     public ProgramBar (Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes)
     {
         super (context, attrs, defStyleAttr, defStyleRes);
 
-        init (attrs);
+        init (attrs, defStyleAttr, defStyleRes);
     }
 
-    private void init (AttributeSet attrs)
+    public int getHourLineColor ()
+    {
+        return hourLineColor;
+    }
+
+    public void setHourLineColor (int hourLineColor)
+    {
+        this.hourLineColor = hourLineColor;
+    }
+
+    public int getSunProgramColor ()
+    {
+        return sunProgramColor;
+    }
+
+    public void setSunProgramColor (int sunProgramColor)
+    {
+        this.sunProgramColor = sunProgramColor;
+    }
+
+    public int getMoonProgramColor ()
+    {
+        return moonProgramColor;
+    }
+
+    public void setMoonProgramColor (int moonProgramColor)
+    {
+        this.moonProgramColor = moonProgramColor;
+    }
+
+    public int getManualProgramColor ()
+    {
+        return manualProgramColor;
+    }
+
+    public void setManualProgramColor (int manualProgramColor)
+    {
+        this.manualProgramColor = manualProgramColor;
+    }
+
+    private void init (AttributeSet attrs, int defAttr, int defRes)
     {
         todayProgram = new ArrayList<> ();
         for (int i = 0; i < TODAY_PROGRAM_LENGTH; i++) {
@@ -68,10 +117,28 @@ public class ProgramBar
             }
         }
 
+        if (attrs != null) {
+            final TypedArray attrArray;
+
+            attrArray = getContext ().obtainStyledAttributes (attrs, R.styleable.ProgramBar, defAttr, defRes);
+
+            hourLineColor = attrArray.getColor (R.styleable.ProgramBar_hour_line_color, Color.GRAY);
+            sunProgramColor = attrArray.getColor (R.styleable.ProgramBar_sun_program_color, Color.BLUE);
+            moonProgramColor = attrArray.getColor (R.styleable.ProgramBar_moon_program_color, Color.BLUE);
+            manualProgramColor = attrArray.getColor (R.styleable.ProgramBar_hour_line_color, Color.YELLOW);
+        }
+        else {
+            hourLineColor = Color.GRAY;
+            sunProgramColor = Color.BLUE;
+            moonProgramColor = Color.BLUE;
+            manualProgramColor = Color.YELLOW;
+        }
+
+
         hourLinePaint = new Paint ();
         hourLinePaint.setAntiAlias(true);
         hourLinePaint.setDither(true);
-        hourLinePaint.setColor (Color.BLACK);
+        hourLinePaint.setColor (hourLineColor);
         hourLinePaint.setStrokeWidth (4);
         hourLinePaint.setStyle (Paint.Style.FILL);
         hourLinePaint.setTextSize (20);
@@ -79,21 +146,21 @@ public class ProgramBar
         sunProgramPaint = new Paint ();
         sunProgramPaint.setAntiAlias(false);
         sunProgramPaint.setDither(false);
-        sunProgramPaint.setColor (Color.BLUE);
+        sunProgramPaint.setColor (sunProgramColor);
         sunProgramPaint.setStrokeWidth (1);
         sunProgramPaint.setStyle (Paint.Style.FILL);
 
         moonProgramPaint = new Paint ();
         moonProgramPaint.setAntiAlias(false);
         moonProgramPaint.setDither(false);
-        moonProgramPaint.setColor (Color.BLUE);
+        moonProgramPaint.setColor (moonProgramColor);
         moonProgramPaint.setStrokeWidth (1);
         moonProgramPaint.setStyle (Paint.Style.FILL);
 
         manualProgramPaint = new Paint ();
         manualProgramPaint.setAntiAlias(false);
         manualProgramPaint.setDither(false);
-        manualProgramPaint.setColor (Color.YELLOW);
+        manualProgramPaint.setColor (manualProgramColor);
         manualProgramPaint.setStrokeWidth (1);
         manualProgramPaint.setStyle (Paint.Style.FILL);
     }

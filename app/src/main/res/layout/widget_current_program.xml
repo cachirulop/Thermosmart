@@ -14,5 +14,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:sun_program_color="@color/colorPrimary"
+        app:moon_program_color="@color/colorPrimary"
+        app:manual_program_color="@color/colorPrimary"
+        app:hour_line_color="#4A4A4A"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

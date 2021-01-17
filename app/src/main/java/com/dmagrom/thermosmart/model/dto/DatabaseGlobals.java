@@ -1,5 +1,7 @@
 package com.dmagrom.thermosmart.model.dto;
 
+import com.dmagrom.thermosmart.R;
+
 public class DatabaseGlobals
 {
     // Enumerators
@@ -17,24 +19,30 @@ public class DatabaseGlobals
 
     public enum ThermosmartProgram
     {
-        None (0),
-        Off (1),
-        Moon (2),
-        Sun (3),
-        Manual (4),
-        ManualMoon (5),
-        ManualSun (6),
-        Holidays (7);
+        None (0, R.drawable.ic_turn_off),
+        Off (1, R.drawable.ic_turn_off),
+        Moon (2, R.drawable.ic_moon),
+        Sun (3, R.drawable.ic_sun),
+        Manual (4, R.drawable.ic_hand),
+        ManualMoon (5, R.drawable.ic_manual_moon),
+        ManualSun (6, R.drawable.ic_manual_sun),
+        Holidays (7, R.drawable.ic_plane);
 
         private final int intValue;
+        private final int imageId;
 
-        ThermosmartProgram (int value) {
+        ThermosmartProgram (int value, int imageId) {
             intValue = value;
+            this.imageId = imageId;
         }
 
         public int getIntValue ()
         {
             return intValue;
+        }
+
+        public int getImageId () {
+            return imageId;
         }
     }
 
