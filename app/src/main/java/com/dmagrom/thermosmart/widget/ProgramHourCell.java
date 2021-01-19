@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ public class ProgramHourCell
 {
     private TextView                           txtHour;
     private ImageView                          imgProgramTarget;
+    private ImageView                          imgProgramTarget1;
     private DatabaseGlobals.ThermosmartProgram targetType = DatabaseGlobals.ThermosmartProgram.Moon;
     private String                             hour;
 
@@ -57,9 +59,20 @@ public class ProgramHourCell
         hour = value;
     }
 
+    public DatabaseGlobals.ThermosmartProgram getTargetType ()
+    {
+        return targetType;
+    }
+
+    public void setTargetType (DatabaseGlobals.ThermosmartProgram targetType)
+    {
+        this.targetType = targetType;
+    }
+
     private void initLayout (AttributeSet attributes)
     {
         LinearLayout.LayoutParams params;
+        LinearLayout images;
 
         if (attributes != null) {
             final TypedArray attrArray;
@@ -84,7 +97,7 @@ public class ProgramHourCell
 
         // Textview
         txtHour = new TextView (getContext ());
-        txtHour.setText (hour);
+        txtHour.setText (hour + ":00");
         txtHour.setTextAlignment (TEXT_ALIGNMENT_CENTER);
         txtHour.setTextSize (12);
         // txtHour.setPadding (2, 2, 2, 2);
@@ -93,38 +106,62 @@ public class ProgramHourCell
         params.setMargins (getDIP (2),getDIP (2),getDIP (2),getDIP (2));
         txtHour.setLayoutParams (params);
 
-        // Image
+        // Images
+        images = new LinearLayout (getContext ());
+        images.setOrientation (HORIZONTAL);
+        params = new LinearLayout.LayoutParams (LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        images.setLayoutParams (params);
+
         imgProgramTarget = new ImageView (getContext ());
         imgProgramTarget.setImageResource (getImageResourceIdByTargetType (targetType));
-        imgProgramTarget.setTextAlignment (TEXT_ALIGNMENT_CENTER);
-
-        params = new LinearLayout.LayoutParams (LayoutParams.MATCH_PARENT, getDIP (25));
+        imgProgramTarget.setTextAlignment (TEXT_ALIGNMENT_VIEW_START);
+        params = new LinearLayout.LayoutParams (LayoutParams.WRAP_CONTENT, getDIP (15));
         imgProgramTarget.setLayoutParams (params);
 
-        addView (imgProgramTarget);
+        imgProgramTarget1 = new ImageView (getContext ());
+        imgProgramTarget1.setImageResource (getImageResourceIdByTargetType (targetType));
+        imgProgramTarget1.setTextAlignment (TEXT_ALIGNMENT_VIEW_END);
+        params = new LinearLayout.LayoutParams (LayoutParams.WRAP_CONTENT, getDIP (15));
+        imgProgramTarget1.setLayoutParams (params);
+
+        images.addView (imgProgramTarget);
+        images.addView (imgProgramTarget1);
+
+        updateImage ();
+
+        addView (images);
         addView (txtHour);
+
+        setOnClickListener (new OnClickListener ()
+        {
+            @Override
+            public void onClick (View v)
+            {
+                doClick ();
+            }
+        });
     }
 
-    @Override
-    public boolean onTouchEvent (MotionEvent event)
+    private void doClick ()
     {
-        switch (event.getAction ()) {
-            case MotionEvent.ACTION_DOWN:
-                if (targetType == DatabaseGlobals.ThermosmartProgram.Moon) {
-                    targetType = DatabaseGlobals.ThermosmartProgram.Sun;
-                }
-                else {
-                    targetType = DatabaseGlobals.ThermosmartProgram.Moon;
-                }
-
-                imgProgramTarget.setImageResource (getImageResourceIdByTargetType (targetType));
-                this.setBackgroundResource (getBackgroundResourceIdByTargetType (targetType));
-
-                invalidate ();
-                break;
+        if (targetType == DatabaseGlobals.ThermosmartProgram.Moon) {
+            targetType = DatabaseGlobals.ThermosmartProgram.Sun;
+        }
+        else {
+            targetType = DatabaseGlobals.ThermosmartProgram.Moon;
         }
 
-        return true;
+        updateImage ();
+    }
+
+    private void updateImage () {
+        // imgProgramTarget.setImageResource (getImageResourceIdByTargetType (targetType));
+        imgProgramTarget.setImageResource (getImageResourceIdByTargetType (DatabaseGlobals.ThermosmartProgram.Sun));
+        imgProgramTarget1.setImageResource (getImageResourceIdByTargetType (DatabaseGlobals.ThermosmartProgram.Moon));
+
+        this.setBackgroundResource (getBackgroundResourceIdByTargetType (targetType));
+
+        invalidate ();
     }
 
     private int getImageResourceIdByTargetType (DatabaseGlobals.ThermosmartProgram targetType) {

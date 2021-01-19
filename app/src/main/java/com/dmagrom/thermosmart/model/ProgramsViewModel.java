@@ -3,7 +3,6 @@ package com.dmagrom.thermosmart.model;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 import com.dmagrom.thermosmart.model.dto.Program;
@@ -18,12 +17,12 @@ public class ProgramsViewModel
         extends BaseViewModel
 {
     protected DatabaseReference dbRef;
-    MutableLiveData<List<Program>>           programList;
+    MutableLiveData<List<Program>> programList;
     List<Long> currentDailyProgram;
 
     public ProgramsViewModel ()
     {
-        super();
+        super ();
 
         // TODO: Load programs from database
 /*
@@ -44,7 +43,7 @@ public class ProgramsViewModel
         // TODO: For testing
         Program p;
 
-        for (int i = 1; i < 3; i++) {
+        for (int i = 1; i < 4; i++) {
             p = new Program ();
             p.setId (i);
 
@@ -56,6 +55,10 @@ public class ProgramsViewModel
                 p.setName ("Fin de semana");
                 p.setDescription ("Programación para los fines de semana");
             }
+            else if (i == 3) {
+                p.setName ("Frio");
+                p.setDescription ("Para cuando hace mucho frio");
+            }
 
             programList.getValue ().add (p);
 
@@ -64,10 +67,12 @@ public class ProgramsViewModel
 
         currentDailyProgram = new ArrayList<> ();
         for (int i = 0; i < 96; i++) {
-            currentDailyProgram.add (new Long(2));
+            currentDailyProgram.add (new Long (2));
         }
 
-        dbRef.child (DatabaseGlobals.KEY_PROGRAMS).child (DatabaseGlobals.KEY_CURRENT_DAILY_PROGRAM).setValue (currentDailyProgram);
+        dbRef.child (DatabaseGlobals.KEY_PROGRAMS)
+                .child (DatabaseGlobals.KEY_CURRENT_DAILY_PROGRAM)
+                .setValue (currentDailyProgram);
     }
 
     public MutableLiveData<List<Program>> getProgramList ()
@@ -103,8 +108,7 @@ public class ProgramsViewModel
             else {
                 try {
                     programs.add (Integer.parseInt (ds.getKey ()) - 1, ds.getValue (Program.class));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace ();
                 }
             }

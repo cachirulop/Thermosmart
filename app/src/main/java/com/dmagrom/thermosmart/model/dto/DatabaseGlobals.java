@@ -19,20 +19,20 @@ public class DatabaseGlobals
 
     public enum ThermosmartProgram
     {
-        None (0, R.drawable.ic_turn_off),
-        Off (1, R.drawable.ic_turn_off),
-        Moon (2, R.drawable.ic_moon),
-        Sun (3, R.drawable.ic_sun),
-        Manual (4, R.drawable.ic_hand),
-        ManualMoon (5, R.drawable.ic_manual_moon),
-        ManualSun (6, R.drawable.ic_manual_sun),
-        Holidays (7, R.drawable.ic_plane);
+        None (R.drawable.ic_turn_off),
+        Off (R.drawable.ic_turn_off),
+        Moon (R.drawable.ic_moon),
+        Sun (R.drawable.ic_sun),
+        Manual (R.drawable.ic_hand),
+        ManualMoon (R.drawable.ic_manual_moon),
+        ManualSun (R.drawable.ic_manual_sun),
+        Holidays (R.drawable.ic_plane);
 
         private final int intValue;
         private final int imageId;
 
-        ThermosmartProgram (int value, int imageId) {
-            intValue = value;
+        ThermosmartProgram (int imageId) {
+            intValue = ordinal ();
             this.imageId = imageId;
         }
 

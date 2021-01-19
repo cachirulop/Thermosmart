@@ -1,6 +1,7 @@
 package com.dmagrom.thermosmart.model.dto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,6 +87,14 @@ public class Program
     public void setTargetType (int hour, DatabaseGlobals.ThermosmartProgram newType)
     {
         program.set (hour, newType.getIntValue ());
+    }
+
+    public DatabaseGlobals.ThermosmartProgram getTargetType (int hour) {
+        int idProgram;
+
+        idProgram = program.get (hour);
+
+        return DatabaseGlobals.ThermosmartProgram.values () [idProgram];
     }
 
     @Override
