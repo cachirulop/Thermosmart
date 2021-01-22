@@ -55,7 +55,9 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
                     <com.dmagrom.thermosmart.widget.ProgramHourCell xmlns:program_hour="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/program_hour_cell_0"
@@ -96,7 +98,9 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
                     <com.dmagrom.thermosmart.widget.ProgramHourCell xmlns:program_hour="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/program_hour_cell_6"
@@ -138,7 +142,9 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
                     <com.dmagrom.thermosmart.widget.ProgramHourCell xmlns:program_hour="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/program_hour_cell_12"
@@ -179,7 +185,9 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp">
 
                     <com.dmagrom.thermosmart.widget.ProgramHourCell xmlns:program_hour="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/program_hour_cell_18"

@@ -14,26 +14,6 @@ public class Program
 
     public Program ()
     {
-        name = "Laborables";
-        description = "Programación de lunes a viernes";
-        program = new ArrayList<> ();
-        for (int i = 0 ; i < 96 ; i++) {
-            if (i == 37) {
-                program.add (DatabaseGlobals.ThermosmartProgram.Sun.getIntValue ());
-            }
-            else {
-                program.add (DatabaseGlobals.ThermosmartProgram.Moon.getIntValue ());
-            }
-/*
-            if (i < (19 * 4)) {
-                program.add (DatabaseGlobals.ThermosmartProgram.Moon.getIntValue ());
-            }
-            else {
-                program.add (DatabaseGlobals.ThermosmartProgram.Sun.getIntValue ());
-            }
-
- */
-        }
     }
 
     public Program (int id, String name, String description, List<Integer> program)

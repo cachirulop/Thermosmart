@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class BaseViewModel
         extends ViewModel
 {
+
     protected void addValueListener (DatabaseReference db, SingleValueListener listener) {
         db.addValueEventListener (new ValueEventListener ()
         {

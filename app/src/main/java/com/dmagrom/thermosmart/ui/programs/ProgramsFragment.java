@@ -1,6 +1,7 @@
 package com.dmagrom.thermosmart.ui.programs;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.dmagrom.thermosmart.R;
 import com.dmagrom.thermosmart.model.ProgramsViewModel;
+import com.dmagrom.thermosmart.model.ProgramsViewModelImpl;
+import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 import com.dmagrom.thermosmart.model.dto.Program;
 
 import java.util.List;
 
 public class ProgramsFragment
         extends Fragment
+        implements ProgramAdapter.OnProgramChangeListener
 {
     private ProgramsViewModel viewModel;
 
@@ -35,11 +39,13 @@ public class ProgramsFragment
         View root;
 
         provider = new ViewModelProvider (this);
-        viewModel = provider.get (ProgramsViewModel.class);
+        viewModel = provider.get (ProgramsViewModelImpl.class);
 
         root = inflater.inflate (R.layout.fragment_programs, container, false);
 
         adapter = new ProgramAdapter ();
+        adapter.setChangeListener (this);
+
         recyclerView = (RecyclerView) root.findViewById (R.id.program_list);
         recyclerView.setLayoutManager (new LinearLayoutManager (getContext ()));
         recyclerView.setItemAnimator (new DefaultItemAnimator ());
@@ -54,19 +60,13 @@ public class ProgramsFragment
             }
         });
 
-
-        /*
-        final TextView textView = root.findViewById (R.id.text_gallery);
-        galleryViewModel.getText ().observe (this, new Observer<String> ()
-        {
-            @Override
-            public void onChanged (@Nullable String s)
-            {
-                textView.setText (s);
-            }
-        });
-         */
-
         return root;
+    }
+
+    @Override
+    public void onChange (int idProgram, int quarter, DatabaseGlobals.ThermosmartProgram targetType)
+    {
+        Log.d (ProgramsFragment.class.getName (), "********* Updating program: " + idProgram + ", " + quarter + ", " +targetType);
+        viewModel.setQuarterProgram (idProgram, quarter, targetType);
     }
 }

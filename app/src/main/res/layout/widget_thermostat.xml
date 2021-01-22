@@ -8,7 +8,7 @@
     <Spinner
         android:id="@+id/spnr_target_type"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="73dp"
         android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
         app:layout_constraintBottom_toTopOf="@+id/img_status"
         app:layout_constraintEnd_toStartOf="@+id/txt_target_temperature"

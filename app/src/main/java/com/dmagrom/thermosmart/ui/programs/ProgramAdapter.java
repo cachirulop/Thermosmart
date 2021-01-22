@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dmagrom.thermosmart.R;
+import com.dmagrom.thermosmart.model.dto.DatabaseGlobals;
 import com.dmagrom.thermosmart.model.dto.Program;
 import com.dmagrom.thermosmart.widget.ProgramHourCell;
 
@@ -19,11 +20,15 @@ public class ProgramAdapter
         extends RecyclerView.Adapter<ProgramAdapter.ProgramViewHolder>
 {
     private List<Program> programList;
+    OnProgramChangeListener changeListener;
+
+    public interface OnProgramChangeListener {
+        void onChange (int idProgram, int quarter, DatabaseGlobals.ThermosmartProgram targetType);
+    }
 
     public ProgramAdapter () {
         programList = new ArrayList<> ();
     }
-
     public ProgramAdapter (List<Program> programs)
     {
         programList = programs;
@@ -38,6 +43,16 @@ public class ProgramAdapter
     public List<Program> getProgramList ()
     {
         return programList;
+    }
+
+    public OnProgramChangeListener getChangeListener ()
+    {
+        return changeListener;
+    }
+
+    public void setChangeListener (OnProgramChangeListener changeListener)
+    {
+        this.changeListener = changeListener;
     }
 
     @NonNull
@@ -62,10 +77,60 @@ public class ProgramAdapter
 
         currentProgram = programList.get (position);
 
+        holder.idProgram = currentProgram.getId ();
         holder.title.setText (currentProgram.getName ());
         holder.description.setText (currentProgram.getDescription ());
         for (int programIndex = 0; programIndex < holder.programHourList.length; programIndex++) {
-            holder.programHourList [programIndex].setTargetType (currentProgram.getTargetType (programIndex));
+            int quarterIndex;
+            ProgramHourCell currentCell;
+
+            quarterIndex = programIndex * 4;
+            currentCell = holder.programHourList [programIndex];
+            currentCell.setTargetTypeFirstHalf (currentProgram.getTargetType (quarterIndex));
+            currentCell.setTargetTypeSecondHalf (currentProgram.getTargetType (quarterIndex + 2));
+            currentCell.setChangeListener (new ProgramHourCell.OnProgramHourCellChangeListener ()
+            {
+                @Override
+                public void onFirstHalfTargetTypeChanged (int hour, DatabaseGlobals.ThermosmartProgram targetType)
+                {
+                    if (changeListener != null) {
+                        int quarter;
+
+                        quarter = (hour * 4);
+
+                        launchOnProgramChange (currentProgram.getId (), targetType, quarter, quarter + 1);
+                    }
+                }
+
+                @Override
+                public void onSecondHalfTargetTypeChanged (int hour, DatabaseGlobals.ThermosmartProgram targetType)
+                {
+                    if (changeListener != null) {
+                        int quarter;
+
+                        quarter = (hour * 4) + 2;
+
+                        launchOnProgramChange (currentProgram.getId (), targetType, quarter, quarter + 1);
+                    }
+                }
+
+                @Override
+                public void onHourTargetTypeChanged (int hour, DatabaseGlobals.ThermosmartProgram targetType)
+                {
+                    if (changeListener != null) {
+                        int quarter;
+
+                        quarter = (hour * 4);
+
+                        launchOnProgramChange (currentProgram.getId (),
+                                               targetType,
+                                               quarter,
+                                               quarter + 1,
+                                               quarter + 2,
+                                               quarter + 3);
+                    }
+                }
+            });
         }
     }
 
@@ -73,6 +138,13 @@ public class ProgramAdapter
     public int getItemCount ()
     {
         return programList.size ();
+    }
+
+    public void launchOnProgramChange (int idProgram, DatabaseGlobals.ThermosmartProgram targetType, int... quarters)
+    {
+        for (int currentQuarter : quarters) {
+            changeListener.onChange (idProgram, currentQuarter, targetType);
+        }
     }
 
     public static class ProgramViewHolder
@@ -104,6 +176,7 @@ public class ProgramAdapter
                 R.id.program_hour_cell_23
         };
 
+        int idProgram;
         TextView title;
         TextView description;
         ProgramHourCell[] programHourList;

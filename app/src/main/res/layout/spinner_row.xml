@@ -10,6 +10,7 @@
         android:id="@+id/imgSpinnerRowImage"
         android:layout_width="38dp"
         android:layout_height="38dp"
+        android:padding="5dp"
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

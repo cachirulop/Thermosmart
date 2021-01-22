@@ -18,9 +18,33 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding {
+            enabled = true
+        }
     }
+
+    flavorDimensions "firebaseConnection"
+    productFlavors {
+        offline {
+            dimension "firebaseConnection"
+        }
+
+        online {
+            dimension 'firebaseConnection'
+        }
+    }
+
+    sourceSets {
+        offline {
+
+        }
+
+        online {
+
+        }
+    }
+
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8

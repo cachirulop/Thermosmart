@@ -2,9 +2,11 @@ package com.dmagrom.thermosmart;
 
 import android.os.Bundle;
 
+import com.dmagrom.thermosmart.ui.programs.ProgramsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -25,7 +27,6 @@ import android.view.Menu;
 public class MainActivity
         extends AppCompatActivity
 {
-
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -65,6 +66,15 @@ public class MainActivity
         NavController navController = Navigation.findNavController (this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController (this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController (navigationView, navController);
+
+        navController.addOnDestinationChangedListener ((controller, destination, arguments) -> {
+            if (destination.getId () == R.id.nav_programs) {
+                fab.show ();
+            }
+            else {
+                fab.hide ();
+            }
+        });
 
         signinFirebase ();
     }

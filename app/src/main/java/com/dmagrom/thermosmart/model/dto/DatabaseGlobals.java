@@ -54,6 +54,10 @@ public class DatabaseGlobals
     public static final String KEY_THERMOSTAT = KEY_ROOT + "thermostat";
 
     public static final String KEY_PROGRAMS   = KEY_SCHEDULE + "/programs";
+    public static final String KEY_PROGRAM_ID = "/id";
+    public static final String KEY_PROGRAM_DESCRIPTION = "/description";
+    public static final String KEY_PROGRAM_NAME = "/name";
+    public static final String KEY_PROGRAM_PROGRAM = "/program";
 
     public static final String KEY_STATUS   = KEY_THERMOSTAT + "/status";
 
