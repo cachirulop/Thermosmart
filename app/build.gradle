@@ -20,7 +20,7 @@ android {
 
     buildFeatures {
         dataBinding {
-            enabled = true
+            enabled true
         }
     }
 

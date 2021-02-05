@@ -55,10 +55,12 @@ public class ThermostatFragment
         final CircularSeekBar seekBar;
         final TextView        txtCurrentTemperature;
         final TextView        txtTargetTemperature;
+        final TextView        txtCurrentHumidity;
 
         seekBar = root.findViewById (R.id.seek_circular_bar_degrees);
         txtCurrentTemperature = root.findViewById (R.id.txt_current_temperature);
         txtTargetTemperature = root.findViewById (R.id.txt_target_temperature);
+        txtCurrentHumidity = root.findViewById (R.id.txt_current_humidity);
 
         seekBar.setOnSeekBarChangeListener (new CircularSeekBar.OnCircularSeekBarChangeListener ()
         {
@@ -107,6 +109,16 @@ public class ThermostatFragment
                      {
                          txtTargetTemperature.setText (String.format ("%.1fº", s.floatValue ()));
                          seekBar.setProgress (s.floatValue ());
+                     }
+                 });
+
+        viewModel.getCurrentHumidity ()
+                 .observe (getViewLifecycleOwner (), new Observer<Float> ()
+                 {
+                     @Override
+                     public void onChanged (@Nullable Float s)
+                     {
+                         txtCurrentHumidity.setText (String.format ("%.1f", s.floatValue ()));
                      }
                  });
 

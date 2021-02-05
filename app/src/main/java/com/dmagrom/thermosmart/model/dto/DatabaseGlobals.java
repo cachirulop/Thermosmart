@@ -61,6 +61,9 @@ public class DatabaseGlobals
 
     public static final String KEY_STATUS   = KEY_THERMOSTAT + "/status";
 
+    public static final String KEY_EVENTS   = KEY_THERMOSTAT + "/events";
+    public static final String KEY_EVENT_PROGRAM_CHANGE = "/programChange";
+
     public static final String KEY_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String KEY_CURRENT_HUMIDITY = "currentHumidity";
     public static final String KEY_NIGHT_TEMPERATURE = "nightTemperature";

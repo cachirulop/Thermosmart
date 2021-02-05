@@ -80,6 +80,8 @@ public class ProgramsViewModelImpl
             public void onComplete (@NonNull Task<Void> task)
             {
                 updating = false;
+
+                EventsLauncher.launchProgramChange (idProgram, quarter, targetType);
             }
         });
     }
